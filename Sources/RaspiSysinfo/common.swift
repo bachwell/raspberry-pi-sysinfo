@@ -34,3 +34,22 @@ struct CLResult {
 protocol CLResolver {
     func resolve(cmd: String, option: String, data: Data) -> CLResult
 }
+
+class DefaultResolver: CLResolver {
+    func resolve(cmd: String, option: String, data: Data) -> CLResult {
+        let command = "\(cmd) \(option)"
+        
+        if data.isEmpty {
+            return CLResult(title: command, result: [:])
+        }
+        guard let inputStr = String(data: data, encoding: .utf8) else {
+            return CLResult(title: command, result: [:])
+        }
+        
+        let optStr = option.isEmpty
+            ? cmd
+            : option
+        
+        return CLResult(title: command, result: [optStr: inputStr])
+    }
+}

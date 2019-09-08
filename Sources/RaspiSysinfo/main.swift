@@ -21,7 +21,6 @@ extension CLResult {
 let raspiCL = RaspiVCGenCMD()
 
 
-print(">>> \(raspiCL.ls().resultToString())")
 print(">>> \(raspiCL.uptime().resultToString())")
 print(">>> \(raspiCL.version().resultToString())")
 print(">>> \(raspiCL.getLcdInfo().resultToString())")
@@ -30,5 +29,6 @@ print(">>> \(raspiCL.measureTemp().resultToString())")
 print(">>> \(raspiCL.measureVolts().resultToString())")
 print(">>> \(raspiCL.codecEnabled().resultToString())")
 print(">>> \(raspiCL.getMem().resultToString())")
+print(">>> \(raspiCL.getConfig().resultToString())")
 
 

@@ -22,9 +22,7 @@ id: core, sdram_c, sdram_i, sdram_p
 ```
 
 > __`vcgencmd measure_temp`__
-```
-#
-```
+
 
 > __`vcgencmd codec_enabled <codec>`__
 ```
@@ -47,5 +45,5 @@ Returns height, width, and depth of the display framebuffer
 
 ## Copy to Raspberry PI
 
-> `rsync -avz -n --exclude='.git' --exclude='.build' -e ssh <path_to_roo_folder_of_project> <pi_user>@0.0.0.0:<path_to_roo_folder_of_project>`
+> `rsync -avz --exclude='.git' --exclude='.build' --exclude='*.xcodeproj' -e ssh <path_to_roo_folder_of_project> <pi_user>@0.0.0.0:<path_to_roo_folder_of_project>`
 

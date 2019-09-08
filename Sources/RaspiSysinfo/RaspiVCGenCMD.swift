@@ -8,20 +8,6 @@ class RaspiVCGenCMD {
 
     private let defaultResolver: CLResolver = DefaultResolver()
     
-    init() {
-//        self.cmdLS0 = Command(launchPath: "/bin/ls", cmd: "ls",
-//                              options: ["-l"],
-//                              resolver: defaultResolver)
-
-    }
-    
-    func ls() -> CLResult {
-        return Command(cmd: "/bin/ls",
-                       options: ["-l"],
-                       resolver: defaultResolver)
-            .doCommand()
-    }
-    
     func version() -> CLResult {
         return Command(cmd: vcgencmd,
                        options: ["version"],
@@ -37,38 +23,15 @@ class RaspiVCGenCMD {
     }
     
     func measureClock() -> CLResult {
-        // vcgencmd measure_clock <clock>
-        // clock: arm, core, h264, isp, v3d, uart, pwm, emmc, pixel, vec, hdmi, dpi
         let options = ["arm", "core", "h264", "isp", "v3d", "uart", "pwm", "emmc", "pixel", "vec", "hdmi", "dpi"]
-        
-        var res = [String: Any]()
-        
-        for option in options {
-            let cmd = Command(cmd: "\(vcgencmd)",
-                              options: ["measure_clock", option],
-                              resolver: defaultResolver)
-            let cmdMapRes = cmd.doCommand().result
-            res.merge(zip(cmdMapRes.keys, cmdMapRes.values)) { (current, _) in current }
-        }
-        
-        return CLResult(title: "\(vcgencmd) measure_clock", result: res)
+        return CLResult(title: "\(vcgencmd) measure_clock",
+            result: optionsIter(option: "measure_clock", options: options))
     }
     
     func measureVolts() -> CLResult {
-        // vcgencmd measure_volts <id>
-        // id: core, sdram_c, sdram_i, sdram_p
         let options = ["core", "sdram_c", "sdram_i", "sdram_p"]
-        var res = [String: Any]()
-        
-        for option in options {
-            let cmd = Command(cmd: vcgencmd,
-                              options: ["measure_volts", option],
-                              resolver: defaultResolver)
-            let cmdMapRes = cmd.doCommand().result
-            res.merge(zip(cmdMapRes.keys, cmdMapRes.values)) { (current, _) in current }
-        }
-        
-        return CLResult(title: "\(vcgencmd) measure_volts", result: res)
+        return CLResult(title: "\(vcgencmd) measure_volts",
+            result: optionsIter(option: "measure_volts", options: options))
     }
     
     func measureTemp() -> CLResult {
@@ -79,36 +42,15 @@ class RaspiVCGenCMD {
     }
     
     func codecEnabled() -> CLResult {
-        // vcgencmd codec_enabled <codec>
-        // codec: H263, H264, MPG2, WVC1, MPG4, AGIF, MJPA, MJPB, MJPG, WMV9, MVC0
         let options = ["H263", "H264", "MPG2", "WVC1", "MPG4", "AGIF", "MJPA", "MJPB", "MJPG", "WMV9", "MVC0"]
-        var res = [String: Any]()
-        
-        for option in options {
-            let cmd = Command(cmd: vcgencmd,
-                              options: ["codec_enabled", option],
-                              resolver: defaultResolver)
-            let cmdMapRes = cmd.doCommand().result
-            res.merge(zip(cmdMapRes.keys, cmdMapRes.values)) { (current, _) in current }
-        }
-        
-        return CLResult(title: "\(vcgencmd) codec_enabled", result: res)
+        return CLResult(title: "\(vcgencmd) codec_enabled",
+            result: optionsIter(option: "codec_enabled", options: options))
     }
     
     func getMem() -> CLResult {
-        // vcgencmd get_mem arm/gpu
         let options = ["arm", "gpu"]
-        var res = [String: Any]()
-        
-        for option in options {
-            let cmd = Command(cmd: vcgencmd,
-                              options: ["get_mem", option],
-                              resolver: defaultResolver)
-            let cmdMapRes = cmd.doCommand().result
-            res.merge(zip(cmdMapRes.keys, cmdMapRes.values)) { (current, _) in current }
-        }
-        
-        return CLResult(title: "\(vcgencmd) get_mem", result: res)
+        return CLResult(title: "\(vcgencmd) get_mem",
+            result: optionsIter(option: "get_mem", options: options))
     }
     
     func getLcdInfo() -> CLResult {
@@ -118,23 +60,23 @@ class RaspiVCGenCMD {
             .doCommand()
     }
     
-}
-
-class DefaultResolver: CLResolver {
-    func resolve(cmd: String, option: String, data: Data) -> CLResult {
-        let command = "\(cmd) \(option)"
+    func getConfig() -> CLResult {
+        let options = ["config", "int","str"]
+        return CLResult(title: "\(vcgencmd) get_config",
+            result: optionsIter(option: "get_config", options: options))
+    }
+    
+    private func optionsIter(option: String, options: [String]) -> [String: Any] {
+        var res = [String: Any]()
         
-        if data.isEmpty {
-            return CLResult(title: command, result: [:])
+        for optItem in options {
+            let cmd = Command(cmd: vcgencmd,
+                              options: [option, optItem],
+                              resolver: defaultResolver)
+            let cmdMapRes = cmd.doCommand().result
+            res.merge(zip(cmdMapRes.keys, cmdMapRes.values)) { (current, _) in current }
         }
-        guard let inputStr = String(data: data, encoding: .utf8) else {
-            return CLResult(title: command, result: [:])
-        }
         
-        let optStr = option.isEmpty
-            ? cmd
-            : option
-        
-        return CLResult(title: command, result: [optStr: inputStr])
+        return res
     }
 }
