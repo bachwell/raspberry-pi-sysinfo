@@ -45,5 +45,5 @@ Returns height, width, and depth of the display framebuffer
 
 ## Copy to Raspberry PI
 
-> `rsync -avz --exclude='.git' --exclude='.build' --exclude='*.xcodeproj' -e ssh <path_to_roo_folder_of_project> <pi_user>@0.0.0.0:<path_to_roo_folder_of_project>`
+> `rsync -avz --exclude='.git' --exclude='.build' --exclude='*.xcodeproj' -e ssh <path_from_folder> <pi_user>@0.0.0.0:<path_to_folder>`
 
